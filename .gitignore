@@ -22,7 +22,6 @@ prj/*/*.str
 *.html
 *.png
 *.bat
-*.md
 
 # 保留重要的源代码文件
 !rtl/**/*.v
