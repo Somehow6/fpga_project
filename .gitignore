@@ -1,0 +1,37 @@
+# 忽略 Python 虚拟环境
+venv/
+__pycache__/
+*.pyc
+
+# 忽略 Vivado 生成的项目文件
+prj/*/cache/
+prj/*/gen/
+prj/*/runs/
+prj/*/sim/
+prj/*/*.hw/
+prj/*/*.ip_user_files/
+prj/*/*.xpr
+prj/*/*.jou
+prj/*/*.log
+prj/*/*.str
+*.backup.jou
+*.backup.log
+
+# 忽略其他生成文件
+*.coe
+*.html
+*.png
+*.bat
+*.md
+
+# 保留重要的源代码文件
+!rtl/**/*.v
+!sim/**/*.v
+!*.py
+!*.txt
+!.gitignore
+
+# 特别排除某些 txt 文件
+TEST.txt
+usb_data.txt
+
