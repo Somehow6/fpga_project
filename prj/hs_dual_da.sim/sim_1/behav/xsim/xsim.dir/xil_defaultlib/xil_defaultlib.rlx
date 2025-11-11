@@ -1,0 +1,17 @@
+0.7
+2020.2
+Nov 18 2020
+09:47:47
+D:/senhaowang/project/33_hs_dual_da/prj/hs_dual_da.gen/sources_1/ip/blk_mem_gen_0/sim/blk_mem_gen_0.v,1761742952,verilog,,D:/senhaowang/project/33_hs_dual_da/prj/hs_dual_da.gen/sources_1/ip/rom_1024x10b/sim/rom_1024x10b.v,,blk_mem_gen_0,,,../../../../hs_dual_da.gen/sources_1/ip/clk_wiz_0,,,,,
+D:/senhaowang/project/33_hs_dual_da/prj/hs_dual_da.gen/sources_1/ip/clk_wiz_0/clk_wiz_0.v,1761584408,verilog,,D:/senhaowang/project/33_hs_dual_da/rtl/binary2bcd.v,,clk_wiz_0,,,../../../../hs_dual_da.gen/sources_1/ip/clk_wiz_0,,,,,
+D:/senhaowang/project/33_hs_dual_da/prj/hs_dual_da.gen/sources_1/ip/clk_wiz_0/clk_wiz_0_clk_wiz.v,1761584408,verilog,,D:/senhaowang/project/33_hs_dual_da/prj/hs_dual_da.gen/sources_1/ip/clk_wiz_0/clk_wiz_0.v,,clk_wiz_0_clk_wiz,,,../../../../hs_dual_da.gen/sources_1/ip/clk_wiz_0,,,,,
+D:/senhaowang/project/33_hs_dual_da/prj/hs_dual_da.gen/sources_1/ip/rom_1024x10b/sim/rom_1024x10b.v,1761584595,verilog,,D:/senhaowang/project/33_hs_dual_da/prj/hs_dual_da.gen/sources_1/ip/clk_wiz_0/clk_wiz_0_clk_wiz.v,,rom_1024x10b,,,../../../../hs_dual_da.gen/sources_1/ip/clk_wiz_0,,,,,
+D:/senhaowang/project/33_hs_dual_da/prj/hs_dual_da.sim/sim_1/behav/xsim/glbl.v,1605673889,verilog,,,,glbl,,,,,,,,
+D:/senhaowang/project/33_hs_dual_da/rtl/binary2bcd.v,1761636644,verilog,,D:/senhaowang/project/33_hs_dual_da/rtl/da_wave_send.v,,binary2bcd,,,../../../../hs_dual_da.gen/sources_1/ip/clk_wiz_0,,,,,
+D:/senhaowang/project/33_hs_dual_da/rtl/da_wave_send.v,1761727144,verilog,,D:/senhaowang/project/33_hs_dual_da/rtl/hs_dual_da.v,,da_wave_send,,,../../../../hs_dual_da.gen/sources_1/ip/clk_wiz_0,,,,,
+D:/senhaowang/project/33_hs_dual_da/rtl/hs_dual_da.v,1761672315,verilog,,D:/senhaowang/project/33_hs_dual_da/rtl/mnist_tx_controller.v,,hs_dual_da,,,../../../../hs_dual_da.gen/sources_1/ip/clk_wiz_0,,,,,
+D:/senhaowang/project/33_hs_dual_da/rtl/mnist_tx_controller.v,1761757695,verilog,,D:/senhaowang/project/33_hs_dual_da/rtl/seg_led.v,,mnist_tx_controller,,,../../../../hs_dual_da.gen/sources_1/ip/clk_wiz_0,,,,,
+D:/senhaowang/project/33_hs_dual_da/rtl/seg_led.v,1761628049,verilog,,D:/senhaowang/project/33_hs_dual_da/rtl/uart_rx.v,,seg_led,,,../../../../hs_dual_da.gen/sources_1/ip/clk_wiz_0,,,,,
+D:/senhaowang/project/33_hs_dual_da/rtl/uart_rx.v,1761639144,verilog,,D:/senhaowang/project/33_hs_dual_da/rtl/uart_tx.v,,uart_rx,,,../../../../hs_dual_da.gen/sources_1/ip/clk_wiz_0,,,,,
+D:/senhaowang/project/33_hs_dual_da/rtl/uart_tx.v,1761640004,verilog,,D:/senhaowang/project/33_hs_dual_da/sim/tb/tb_hs_dual_da.v,,uart_tx,,,../../../../hs_dual_da.gen/sources_1/ip/clk_wiz_0,,,,,
+D:/senhaowang/project/33_hs_dual_da/sim/tb/tb_hs_dual_da.v,1761666831,verilog,,,,tb_hs_dual_da,,,../../../../hs_dual_da.gen/sources_1/ip/clk_wiz_0,,,,,

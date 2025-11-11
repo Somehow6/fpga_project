@@ -1,0 +1,41 @@
+$date
+        2025-Nov-04 20:52:09
+$end
+$version
+        Vivado v2020.2 (64-bit)
+$end
+$timescale
+        1ps
+$end
+$scope module dut $end
+$var reg 1 " p_1_in $end
+$var reg 1 # debug_usb_txe_sync $end
+$var reg 3 $ debug_usb_state [2:0] $end
+$var reg 1 ' usb_wr_n_OBUF $end
+$var reg 8 ( debug_usb_data [7:0] $end
+$var reg 8 0 usb_test_counter [7:0] $end
+$var reg 1 8 usb_rd_pulse $end
+$var reg 1 9 usb_tx_empty $end
+$var reg 1 : fifo_empty $end
+$var reg 1 ; _TRIGGER $end
+$var reg 1 < _WINDOW $end
+$var reg 1 = _GAP $end
+$upscope $end
+$enddefinitions $end
+#0
+$dumpvars
+0"
+1#
+b0 $
+1'
+b0 (
+b0 0
+08
+09
+1:
+0;
+1<
+0=
+$end
+#2048
+1;

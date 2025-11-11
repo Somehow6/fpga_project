@@ -164,24 +164,81 @@ ddr3_top u_ddr3_top (
     .rdata_req           (rdata_req)                  //������������   
      );                    
 
-//HDMI������ʾģ��
-// Note: PLL removed - all clocks now come from external unified PLL    
+//==============================================================================
+// 图像预处理模块
+//==============================================================================
+wire        binary_pixel;    // 28×28二值像素输出
+wire        binary_valid;    // 二值像素有效
+wire        proc_frame_done; // 预处理完成标志
+
+image_preprocessor u_image_preprocessor (
+    .pixel_clk      (pixel_clk          ),
+    .rst_n          (sys_init_done & rst_n),
+    .pixel_in       (rddata             ),  // DDR3读出的像素
+    .pixel_x        (),                     // 需要从ddr3_top导出坐标
+    .pixel_y        (),                     // 需要从ddr3_top导出坐标
+    .pixel_valid    (rdata_req          ),  // 像素有效信号
+    .frame_vsync    (rd_vsync           ),  // 帧同步信号
+    .binary_pixel   (binary_pixel       ),  // 28×28二值输出
+    .binary_valid   (binary_valid       ),  // 二值像素有效
+    .frame_done     (proc_frame_done    )   // 一帧处理完成
+);
+
+//==============================================================================
+// 28×28图像缓存
+//==============================================================================
+reg [9:0]  wr_addr_cnt;      // 写地址计数器
+wire       buf_rd_data;      // 缓存读数据
+
+// 写地址计数器
+always @(posedge pixel_clk or negedge rst_n) begin
+    if (!rst_n) begin
+        wr_addr_cnt <= 10'd0;
+    end else begin
+        if (binary_valid) begin
+            if (wr_addr_cnt == 10'd783) begin
+                wr_addr_cnt <= 10'd0;
+            end else begin
+                wr_addr_cnt <= wr_addr_cnt + 10'd1;
+            end
+        end
+    end
+end
+
+binary_image_buffer u_binary_image_buffer (
+    .clk            (pixel_clk          ),
+    .rst_n          (sys_init_done & rst_n),
+    .wr_en          (binary_valid       ),
+    .wr_addr        (wr_addr_cnt        ),
+    .wr_data        (binary_pixel       ),
+    .wr_frame_done  (proc_frame_done    ),
+    .rd_x           (5'd0               ),  // 读坐标由hdmi_top内部的pixel_scaler控制
+    .rd_y           (5'd0               ),
+    .rd_data        (buf_rd_data        )
+);
+
+//==============================================================================
+// HDMI显示模块（增强版）
+//==============================================================================
 hdmi_top u_hdmi_top(
-    .pixel_clk            (pixel_clk),
-    .pixel_clk_5x         (pixel_clk_5x),    
+    .pixel_clk            (pixel_clk    ),
+    .pixel_clk_5x         (pixel_clk_5x ),    
     .sys_rst_n            (sys_init_done & rst_n),
-    //hdmi�ӿ�                   
-    .tmds_clk_p           (tmds_clk_p   ),   // TMDS ʱ��ͨ��
+    // HDMI接口                   
+    .tmds_clk_p           (tmds_clk_p   ),
     .tmds_clk_n           (tmds_clk_n   ),
-    .tmds_data_p          (tmds_data_p  ),   // TMDS ����ͨ��
+    .tmds_data_p          (tmds_data_p  ),
     .tmds_data_n          (tmds_data_n  ),
-    .tmds_oen             (tmds_oen     ),   // TMDS ���ʹ��
-    //�û��ӿ� 
-    .video_vs             (rd_vsync     ),   //HDMI���ź�  
+    .tmds_oen             (tmds_oen     ),
+    // 用户接口（左半屏）
+    .video_vs             (rd_vsync     ),
     .pixel_xpos           (),
     .pixel_ypos           (),      
-    .data_in              (rddata),          //�������� 
-    .data_req             (rdata_req)        //������������   
+    .data_in              (rddata       ),
+    .data_req             (rdata_req    ),
+    // 28×28二值图像接口（右半屏）
+    .binary_pixel         (buf_rd_data  ),
+    .binary_valid         (1'b1         )   // 缓存数据始终有效
 );   
 
 endmodule

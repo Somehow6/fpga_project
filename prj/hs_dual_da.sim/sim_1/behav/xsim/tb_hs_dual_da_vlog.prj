@@ -1,0 +1,20 @@
+# compile verilog/system verilog design source files
+verilog xil_defaultlib  --include "../../../../hs_dual_da.gen/sources_1/ip/clk_wiz_0" \
+"../../../../hs_dual_da.gen/sources_1/ip/blk_mem_gen_0/sim/blk_mem_gen_0.v" \
+"../../../../hs_dual_da.gen/sources_1/ip/rom_1024x10b/sim/rom_1024x10b.v" \
+"../../../../hs_dual_da.gen/sources_1/ip/clk_wiz_0/clk_wiz_0_clk_wiz.v" \
+"../../../../hs_dual_da.gen/sources_1/ip/clk_wiz_0/clk_wiz_0.v" \
+"../../../../../rtl/binary2bcd.v" \
+"../../../../../rtl/da_wave_send.v" \
+"../../../../../rtl/hs_dual_da.v" \
+"../../../../../rtl/mnist_tx_controller.v" \
+"../../../../../rtl/seg_led.v" \
+"../../../../../rtl/uart_rx.v" \
+"../../../../../rtl/uart_tx.v" \
+"../../../../../sim/tb/tb_hs_dual_da.v" \
+
+# compile glbl module
+verilog xil_defaultlib "glbl.v"
+
+# Do not sort compile order
+nosort

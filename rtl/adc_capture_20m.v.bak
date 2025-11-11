@@ -1,0 +1,114 @@
+//****************************************Copyright (c)***********************************//
+// File name:           adc_capture
+// Last modified Date:  2025/11/04
+// Last Version:        V1.2 (with DEBUG mode)
+// Descriptions:        12-bit single channel ADC data capture module (CH2)
+//                      Uses 20MHz system clock with internal divide-by-4 to generate
+//                      5MHz ADC sampling clock for USB2.0 integration
+//                      Data rate: 5MHz × 2 bytes/sample = 10 MB/s
+//
+//                      **DEBUG MODE**: Set ADC_TEST_MODE = 1 to replace ADC data with
+//                      test counter, keeping all timing logic intact for debugging
+//----------------------------------------------------------------------------------------
+//****************************************************************************************//
+
+module adc_capture(
+    input                clk_20m       ,  // 20MHz system clock
+    input                rst_n         ,  // System reset (active low)
+    input                adc_test_mode ,  // Test mode: 1=counter, 0=real ADC (NEW!)
+    // ADC interface
+    input       [11:0]   adc_data      ,  // 12-bit ADC data input (D0-D11)
+    input                adc_otr       ,  // ADC over-range indicator
+    output               adc_clk       ,  // ADC chip clock output (5MHz)
+    // Data output interface (for USB or FIFO)
+    output  reg [11:0]   capture_data  ,  // Captured 12-bit data
+    output  reg          data_valid    ,  // Data valid flag
+    output  reg          otr_flag         // Over-range flag
+);
+
+//reg define
+reg [1:0]                clk_div_cnt   ;  // Clock divider counter (0-3)
+reg [11:0]               test_counter  ;  // Test counter for debug mode (0-4095, 12-bit)
+
+//wire define
+wire                     clk_div       ;  // Divided clock (5MHz)
+
+//*****************************************************
+//**                    main code
+//*****************************************************
+
+// Clock divider: 20MHz / 4 = 5MHz
+// Counter cycles: 00 -> 01 -> 10 -> 11 -> 00...
+// Use MSB (bit[1]) as divided clock output
+always @(posedge clk_20m or negedge rst_n) begin
+    if (!rst_n)
+        clk_div_cnt <= 2'b00;
+    else
+        clk_div_cnt <= clk_div_cnt + 2'b01;  // Free-running counter
+end
+
+// Extract divided clock from MSB of counter
+assign clk_div = clk_div_cnt[1];
+
+// Output 5MHz sampling clock to ADC chip
+assign adc_clk = clk_div;
+
+//==============================================================================
+// Test Counter: Increments AFTER capturing, not at the same time
+// This ensures stable data when data_valid is asserted
+//==============================================================================
+always @(posedge clk_20m or negedge rst_n) begin
+    if (!rst_n)
+        test_counter <= 12'd0;
+    else if (adc_test_mode && (clk_div_cnt == 2'b10))  // Increment AFTER capture (at 10, not 01)
+        test_counter <= test_counter + 12'd1;
+end
+
+//==============================================================================
+// Data capture logic with EXTENDED data_valid
+// 
+// KEY FIX: data_valid now lasts for TWO 20MHz cycles (100ns instead of 50ns)
+//   - Asserted when clk_div_cnt = 01 (before ADC clock rising edge)
+//   - Remains high when clk_div_cnt = 10 (after ADC clock rising edge)
+//   - This gives adc_to_usb a much larger window to capture
+//
+// TEST MODE: Captures test_counter which was incremented in previous cycle
+//   - Counter increments at clk_div_cnt=10
+//   - Capture happens at clk_div_cnt=01 (next cycle)
+//   - So capture gets the newly incremented value
+//==============================================================================
+always @(posedge clk_20m or negedge rst_n) begin
+    if (!rst_n) begin
+        capture_data <= 12'd0;
+        data_valid   <= 1'b0;
+        otr_flag     <= 1'b0;
+    end else begin
+        case (clk_div_cnt)
+            2'b01: begin
+                // First cycle of data_valid: capture data
+                if (adc_test_mode)
+                    capture_data <= test_counter;     // TEST: Use counter (stable from previous increment)
+                else
+                    capture_data <= adc_data;         // NORMAL: Use real ADC data
+                    
+                data_valid <= 1'b1;                   // Start of data_valid pulse
+                otr_flag   <= adc_otr;
+            end
+            
+            2'b10: begin
+                // Second cycle of data_valid: keep data stable
+                // capture_data holds previous value
+                data_valid <= 1'b1;                   // Continue data_valid pulse (EXTENDED)
+                // Note: test_counter increments here, but capture_data is already latched
+            end
+            
+            default: begin
+                // Other states: data_valid low
+                data_valid <= 1'b0;
+            end
+        endcase
+    end
+end
+
+endmodule
+

@@ -1,0 +1,231 @@
+//****************************************Copyright (c)***********************************//
+// File name:           adc_to_usb
+// Last modified Date:  2025/11/04
+// Last Version:        V1.3
+// Descriptions:        ADC to USB data converter with optimized throughput
+//                      Converts 12-bit ADC data into two 8-bit bytes for USB transmission
+//                      Byte1: adc_data[11:4] (high 8 bits)
+//                      Byte2: {4'b0000, adc_data[3:0]} (low 4 bits, zero-padded)
+//                      
+//                      **Optimized**: Back-to-back transmission for 10 MB/s throughput
+//                      State machine: BYTE1 → BYTE2 → BYTE1 → BYTE2 (no IDLE wait)
+//                      Write rate: 20MHz / 2 cycles = 10 MB/s (matches ADC and USB rate)
+//----------------------------------------------------------------------------------------
+//****************************************************************************************//
+
+module adc_to_usb(
+    input                clk           ,  // ADC clock (20MHz)
+    input                rst_n         ,  // System reset (active low)
+    input       [1:0]    test_mode     ,  // Test mode: 0=ignored(USB test), 1=ADC test, 2=Normal
+    // ADC interface
+    input       [11:0]   adc_data      ,  // 12-bit ADC data
+    input                adc_data_valid,  // ADC data valid flag
+    input                adc_otr_flag  ,  // ADC over-range flag (for monitoring)
+    // FIFO interface
+    output reg  [7:0]    fifo_data     ,  // 8-bit data to FIFO
+    output reg           fifo_wr_en    ,  // FIFO write enable
+    input                fifo_full        // FIFO full signal
+);
+
+//==============================================================================
+// Test mode behavior:
+//   Mode 0 (USB Test): This module is bypassed, no effect here
+//   Mode 1 (ADC Test): Send ADC test counter data through normal path (for debugging)
+//   Mode 2 (Normal):   Send real ADC sampling data
+//
+// NOTE: Mode 1 and Mode 2 now use SAME data path, only data source differs
+//       This allows testing complete ADC->USB chain with known test pattern
+//==============================================================================
+
+//==============================================================================
+// Start-of-Stream Header Configuration
+// Header is sent ONCE at the beginning, then continuous data follows
+//==============================================================================
+parameter START_HEADER1 = 8'hAA;      // Start header byte 1
+parameter START_HEADER2 = 8'h55;      // Start header byte 2
+
+//localparam define
+localparam IDLE   = 3'b000;           // Idle state (only for startup and header)
+localparam HEADER1= 3'b001;           // Send start header byte 1 (only once)
+localparam HEADER2= 3'b010;           // Send start header byte 2 (only once)
+localparam BYTE1  = 3'b011;           // Send high byte (bits [11:4])
+localparam BYTE2  = 3'b100;           // Send low byte (bits [3:0] with padding)
+
+//reg define
+reg [2:0]  cur_state      ;           // Current state
+reg [2:0]  next_state     ;           // Next state
+reg [11:0] adc_data_reg   ;           // Register to hold current ADC data being transmitted
+reg [11:0] adc_data_next  ;           // Register to hold next ADC data (pipeline)
+reg        header_sent    ;           // Flag: header has been sent
+reg        data_ready     ;           // Flag: next data is ready in pipeline
+
+//*****************************************************
+//**                    main code
+//*****************************************************
+
+//==============================================================================
+// Header Sent Flag
+//==============================================================================
+always @(posedge clk or negedge rst_n) begin
+    if (!rst_n)
+        header_sent <= 1'b0;
+    else if (cur_state == HEADER2 && next_state == BYTE1)
+        header_sent <= 1'b1;
+end
+
+//==============================================================================
+// State Transition
+//==============================================================================
+always @(posedge clk or negedge rst_n) begin
+    if (!rst_n)
+        cur_state <= IDLE;
+    else
+        cur_state <= next_state;
+end
+
+//==============================================================================
+// Data Pipeline Management - FIXED for reliable capture
+// 
+// KEY FIX: Now with extended data_valid (100ns), we have multiple chances to capture
+//   - Capture when entering BYTE1 from IDLE
+//   - Also capture during BYTE1/BYTE2 for next sample
+//   - Use registered adc_data_valid for edge detection
+//==============================================================================
+reg adc_data_valid_r;  // Registered version for edge detection
+
+always @(posedge clk or negedge rst_n) begin
+    if (!rst_n)
+        adc_data_valid_r <= 1'b0;
+    else
+        adc_data_valid_r <= adc_data_valid;
+end
+
+// Edge detection
+wire adc_data_valid_rise;
+assign adc_data_valid_rise = adc_data_valid && !adc_data_valid_r;
+
+always @(posedge clk or negedge rst_n) begin
+    if (!rst_n) begin
+        adc_data_reg  <= 12'd0;
+        adc_data_next <= 12'd0;
+        data_ready    <= 1'b0;
+    end else begin
+        // Consume pipeline when finishing BYTE2
+        if (cur_state == BYTE2 && next_state != BYTE2) begin
+            if (data_ready) begin
+                adc_data_reg <= adc_data_next;  // Move pipeline
+                data_ready <= 1'b0;              // Consumed
+            end
+        end 
+        
+        // Capture on rising edge of data_valid in any state
+        // This ensures we don't miss any sample
+        if (adc_data_valid_rise) begin
+            if (cur_state == IDLE || cur_state == HEADER1 || cur_state == HEADER2) begin
+                // First sample: load directly to working register
+                adc_data_reg <= adc_data;
+            end else begin
+                // Subsequent samples: load to pipeline
+                adc_data_next <= adc_data;
+                data_ready <= 1'b1;
+            end
+        end
+    end
+end
+
+//==============================================================================
+// Next State Logic
+// Mode 1 and Mode 2 use SAME logic now - both wait for adc_data_valid
+//==============================================================================
+always @(*) begin
+    case (cur_state)
+        IDLE: begin
+            // Wait for valid ADC data (or test counter in Mode 1)
+            if (adc_data_valid && !fifo_full) begin
+                if (!header_sent)
+                    next_state = HEADER1;
+                else
+                    next_state = BYTE1;
+            end else begin
+                next_state = IDLE;
+            end
+        end
+        
+        HEADER1: begin
+            if (!fifo_full)
+                next_state = HEADER2;
+            else
+                next_state = HEADER1;
+        end
+        
+        HEADER2: begin
+            if (!fifo_full)
+                next_state = BYTE1;
+            else
+                next_state = HEADER2;
+        end
+        
+        BYTE1: begin
+            // After BYTE1, always go to BYTE2 (if FIFO not full)
+            if (!fifo_full)
+                next_state = BYTE2;
+            else
+                next_state = BYTE1;
+        end
+        
+        BYTE2: begin
+            // After BYTE2: continue if next data ready, else wait in IDLE
+            if (!fifo_full) begin
+                if (data_ready)
+                    next_state = BYTE1;  // Next data available, continue
+                else
+                    next_state = IDLE;   // Wait for next adc_data_valid
+            end else begin
+                next_state = BYTE2;      // Wait for FIFO space
+            end
+        end
+        
+        default:
+            next_state = IDLE;
+    endcase
+end
+
+//==============================================================================
+// Output Logic (SEQUENTIAL - Registered outputs)
+// Clean, glitch-free outputs for reliable async FIFO operation
+//==============================================================================
+always @(posedge clk or negedge rst_n) begin
+    if (!rst_n) begin
+        fifo_data  <= 8'd0;
+        fifo_wr_en <= 1'b0;
+    end else begin
+        case (cur_state)
+            IDLE: begin
+                fifo_data  <= 8'd0;
+                fifo_wr_en <= 1'b0;
+            end
+            HEADER1: begin
+                fifo_data  <= START_HEADER1;       // 0xAA
+                fifo_wr_en <= !fifo_full;
+            end
+            HEADER2: begin
+                fifo_data  <= START_HEADER2;       // 0x55
+                fifo_wr_en <= !fifo_full;
+            end
+            BYTE1: begin
+                fifo_data  <= adc_data_reg[11:4];  // High 8 bits
+                fifo_wr_en <= !fifo_full;
+            end
+            BYTE2: begin
+                fifo_data  <= {4'b0000, adc_data_reg[3:0]};  // Low 4 bits
+                fifo_wr_en <= !fifo_full;
+            end
+            default: begin
+                fifo_data  <= 8'd0;
+                fifo_wr_en <= 1'b0;
+            end
+        endcase
+    end
+end
+
+endmodule

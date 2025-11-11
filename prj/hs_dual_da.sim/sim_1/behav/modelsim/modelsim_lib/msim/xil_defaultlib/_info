@@ -1,0 +1,188 @@
+m255
+K4
+z2
+!s11f vlog 2020.4 2020.10, Oct 13 2020
+13
+!s112 1.1
+!i10d 8192
+!i10e 25
+!i10f 100
+cModel Technology
+Z0 dE:/FPGA/hs_dual_da/prj/hs_dual_da.sim/sim_1/behav/modelsim
+T_opt
+!s110 1687242397
+V[O@9NT:bBf8em`4i6l;G[0
+04 13 4 work tb_hs_dual_da fast 0
+04 4 4 work glbl fast 0
+=1-d8bbc14fe46f-6491469c-1a1-6cbc
+o-quiet -auto_acc_if_foreign -work xil_defaultlib -L xil_defaultlib -L blk_mem_gen_v8_4_4 -L unisims_ver -L unimacro_ver -L secureip -L xpm +acc
+Z1 tCvgOpt 0
+n@_opt
+OL;O;2020.4;71
+vclk_wiz_0
+Z2 !s110 1687242385
+!i10b 1
+!s100 c<RmG:17i1:QB6VXROQ9L3
+Z3 !s11b Dg1SIo80bB@j0V0VzS_@n1
+I;9eHj@c`>NT@5TFDEnZZT3
+R0
+Z4 w1687151835
+8../../../../hs_dual_da.gen/sources_1/ip/clk_wiz_0/clk_wiz_0.v
+F../../../../hs_dual_da.gen/sources_1/ip/clk_wiz_0/clk_wiz_0.v
+!i122 3
+L0 70 21
+Z5 VDg1SIo80bB@j0V0VzS_@n1
+Z6 OL;L;2020.4;71
+r1
+!s85 0
+31
+Z7 !s108 1687242385.000000
+Z8 !s107 ../../../../../sim/tb/tb_hs_dual_da.v|../../../../../rtl/hs_dual_da.v|../../../../../rtl/da_wave_send.v|../../../../hs_dual_da.gen/sources_1/ip/clk_wiz_0/clk_wiz_0.v|../../../../hs_dual_da.gen/sources_1/ip/clk_wiz_0/clk_wiz_0_clk_wiz.v|../../../../hs_dual_da.gen/sources_1/ip/rom_1024x10b/sim/rom_1024x10b.v|
+Z9 !s90 -incr|-work|xil_defaultlib|+incdir+../../../../hs_dual_da.gen/sources_1/ip/clk_wiz_0|../../../../hs_dual_da.gen/sources_1/ip/rom_1024x10b/sim/rom_1024x10b.v|../../../../hs_dual_da.gen/sources_1/ip/clk_wiz_0/clk_wiz_0_clk_wiz.v|../../../../hs_dual_da.gen/sources_1/ip/clk_wiz_0/clk_wiz_0.v|../../../../../rtl/da_wave_send.v|../../../../../rtl/hs_dual_da.v|../../../../../sim/tb/tb_hs_dual_da.v|
+!i113 0
+Z10 o-work xil_defaultlib -L mtiAvm -L mtiRnm -L mtiOvm -L mtiUvm -L mtiUPF -L infact
+Z11 !s92 -work xil_defaultlib +incdir+../../../../hs_dual_da.gen/sources_1/ip/clk_wiz_0 -L mtiAvm -L mtiRnm -L mtiOvm -L mtiUvm -L mtiUPF -L infact
+R1
+vclk_wiz_0_clk_wiz
+R2
+!i10b 1
+!s100 lDH@OE2bUGBYG<[1[[0n[2
+R3
+I7zImnVVla_`boQo46GKT^0
+R0
+R4
+8../../../../hs_dual_da.gen/sources_1/ip/clk_wiz_0/clk_wiz_0_clk_wiz.v
+F../../../../hs_dual_da.gen/sources_1/ip/clk_wiz_0/clk_wiz_0_clk_wiz.v
+!i122 3
+L0 68 134
+R5
+R6
+r1
+!s85 0
+31
+R7
+R8
+R9
+!i113 0
+R10
+R11
+R1
+vda_wave_send
+R2
+!i10b 1
+!s100 7koii0M^amL1`dbTjDi<D3
+R3
+I3_VDE]nFl=CQkC4E2W^^^2
+R0
+w1686042954
+8../../../../../rtl/da_wave_send.v
+F../../../../../rtl/da_wave_send.v
+!i122 3
+L0 23 52
+R5
+R6
+r1
+!s85 0
+31
+R7
+R8
+R9
+!i113 0
+R10
+R11
+R1
+vglbl
+R2
+!i10b 1
+!s100 ZHmTNm_h3dd`6mIQLzSUN3
+R3
+IJT>_:<WW6a7KP^k3<8E3=1
+R0
+w1605673889
+8glbl.v
+Fglbl.v
+!i122 4
+L0 6 78
+R5
+R6
+r1
+!s85 0
+31
+R7
+!s107 glbl.v|
+!s90 -work|xil_defaultlib|glbl.v|
+!i113 0
+R10
+R1
+vhs_dual_da
+R2
+!i10b 1
+!s100 hAV0kmBZBzOQ=JRnLa7_O3
+R3
+IC1V5ciT:3g_:oMecG=hC<1
+R0
+w1687225753
+8../../../../../rtl/hs_dual_da.v
+F../../../../../rtl/hs_dual_da.v
+!i122 3
+L0 23 51
+R5
+R6
+r1
+!s85 0
+31
+R7
+R8
+R9
+!i113 0
+R10
+R11
+R1
+vrom_1024x10b
+R2
+!i10b 1
+!s100 HYL28<i3zC0HeE:4VZ^aK3
+R3
+I:32lWVk><neN]`[XGcj;B0
+R0
+w1686044839
+8../../../../hs_dual_da.gen/sources_1/ip/rom_1024x10b/sim/rom_1024x10b.v
+F../../../../hs_dual_da.gen/sources_1/ip/rom_1024x10b/sim/rom_1024x10b.v
+!i122 3
+L0 56 156
+R5
+R6
+r1
+!s85 0
+31
+R7
+R8
+R9
+!i113 0
+R10
+R11
+R1
+vtb_hs_dual_da
+R2
+!i10b 1
+!s100 ND;X5lQNNiP1LKEV47G7_1
+R3
+I_FkC56706dBAeDm[?B>Ol2
+R0
+w1686047034
+8../../../../../sim/tb/tb_hs_dual_da.v
+F../../../../../sim/tb/tb_hs_dual_da.v
+!i122 3
+L0 3 30
+R5
+R6
+r1
+!s85 0
+31
+R7
+R8
+R9
+!i113 0
+R10
+R11
+R1

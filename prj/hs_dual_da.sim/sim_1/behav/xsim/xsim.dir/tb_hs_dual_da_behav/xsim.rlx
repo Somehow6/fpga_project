@@ -1,0 +1,12 @@
+
+{ 
+    crc :  1275885174074582188  , 
+    ccp_crc :  0  , 
+    cmdline : " -wto 6604d0d04d9d478896fda5a8c6f6a320 --incr --debug typical --relax --mt 2 -L xil_defaultlib -L blk_mem_gen_v8_4_4 -L unisims_ver -L unimacro_ver -L secureip -L xpm --snapshot tb_hs_dual_da_behav xil_defaultlib.tb_hs_dual_da xil_defaultlib.glbl" , 
+    buildDate : "Nov 18 2020" , 
+    buildTime : "09:47:47" , 
+    linkCmd : "D:\\senhaowang\\xilinx\\Vivado\\2020.2\\data\\..\\tps\\mingw\\6.2.0\\win64.o\\nt\\bin\\gcc.exe -Wa,-W  -O -Wl,--stack,104857600 -o \"xsim.dir/tb_hs_dual_da_behav/xsimk.exe\"   \"xsim.dir/tb_hs_dual_da_behav/obj/xsim_0.win64.obj\" \"xsim.dir/tb_hs_dual_da_behav/obj/xsim_1.win64.obj\" \"xsim.dir/tb_hs_dual_da_behav/obj/xsim_2.win64.obj\" -L\"D:\\senhaowang\\xilinx\\Vivado\\2020.2\\lib\\win64.o\" -lrdi_simulator_kernel   -lrdi_simbridge_kernel" , 
+    aggregate_nets : 
+    [ 
+    ] 
+} 

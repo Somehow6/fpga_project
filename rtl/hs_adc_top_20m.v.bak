@@ -1,0 +1,62 @@
+//****************************************Copyright (c)***********************************//
+// File name:           hs_adc_top
+// Last modified Date:  2025/11/03
+// Last Version:        V1.1
+// Descriptions:        12-bit single channel ADC top module (CH2)
+//                      Uses 20MHz clock with internal divide-by-2 for 10MHz sampling
+//                      Independent module designed for USB2.0 integration
+//                      Data flow: Camera -> DAC -> ADC -> USB -> PC
+//----------------------------------------------------------------------------------------
+//****************************************************************************************//
+
+module hs_adc_top(
+    input                clk_20m       ,  // 20MHz system clock (from external PLL)
+    input                rst_n         ,  // System reset (active low)
+    input                adc_test_mode ,  // ADC test mode: 1=counter, 0=real ADC (NEW!)
+    
+    // CH2 ADC interface (12-bit single channel)
+    input       [11:0]   ch2_data      ,  // CH2 ADC data input (D0-D11)
+    input                ch2_otr       ,  // CH2 over-range indicator
+    output               ch2_clk       ,  // CH2 ADC clock output (10MHz)
+    
+    // Data output interface (for USB2.0 module)
+    output      [11:0]   adc_out_data  ,  // ADC captured data output
+    output               adc_data_valid,  // ADC data valid flag
+    output               adc_otr_flag     // ADC over-range flag
+);
+
+//*****************************************************
+//**                    main code
+//*****************************************************
+
+// ADC capture module instance with clock divider
+adc_capture u_adc_capture(
+    .clk_20m       (clk_20m         ),
+    .rst_n         (rst_n           ),
+    .adc_test_mode (adc_test_mode   ),  // Test mode control
+    // ADC interface
+    .adc_data      (ch2_data        ),
+    .adc_otr       (ch2_otr         ),
+    .adc_clk       (ch2_clk         ),
+    // Data output
+    .capture_data  (adc_out_data    ),
+    .data_valid    (adc_data_valid  ),
+    .otr_flag      (adc_otr_flag    )
+);
+
+// Optional: ILA for debugging (uncomment when needed)
+// You can use this to verify ADC data capture in hardware
+// Note: Use clk_10m or a phase-shifted version for stable sampling
+/*
+ila_adc u_ila_adc (
+    .clk     (clk_10m        ),       // 10MHz sampling clock
+    .probe0  (ch2_otr        ),       // [0:0] Over-range flag
+    .probe1  (ch2_data       ),       // [11:0] ADC raw data
+    .probe2  (adc_out_data   ),       // [11:0] Captured data
+    .probe3  (adc_data_valid ),       // [0:0] Data valid flag
+    .probe4  (adc_otr_flag   )        // [0:0] Captured OTR flag
+);
+*/
+
+endmodule
+

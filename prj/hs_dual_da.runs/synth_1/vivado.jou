@@ -1,0 +1,12 @@
+#-----------------------------------------------------------
+# Vivado v2020.2 (64-bit)
+# SW Build 3064766 on Wed Nov 18 09:12:45 MST 2020
+# IP Build 3064653 on Wed Nov 18 14:17:31 MST 2020
+# Start of session at: Tue Nov 11 11:59:46 2025
+# Process ID: 74716
+# Current directory: D:/senhaowang/project/da_sweep/prj/hs_dual_da.runs/synth_1
+# Command line: vivado.exe -log hs_dual_da_hdmi_top.vds -product Vivado -mode batch -messageDb vivado.pb -notrace -source hs_dual_da_hdmi_top.tcl
+# Log file: D:/senhaowang/project/da_sweep/prj/hs_dual_da.runs/synth_1/hs_dual_da_hdmi_top.vds
+# Journal file: D:/senhaowang/project/da_sweep/prj/hs_dual_da.runs/synth_1\vivado.jou
+#-----------------------------------------------------------
+source hs_dual_da_hdmi_top.tcl -notrace

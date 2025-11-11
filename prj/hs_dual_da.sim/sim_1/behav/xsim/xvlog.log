@@ -1,0 +1,24 @@
+INFO: [VRFC 10-2263] Analyzing Verilog file "D:/senhaowang/project/33_hs_dual_da/prj/hs_dual_da.gen/sources_1/ip/blk_mem_gen_0/sim/blk_mem_gen_0.v" into library xil_defaultlib
+INFO: [VRFC 10-311] analyzing module blk_mem_gen_0
+INFO: [VRFC 10-2263] Analyzing Verilog file "D:/senhaowang/project/33_hs_dual_da/prj/hs_dual_da.gen/sources_1/ip/rom_1024x10b/sim/rom_1024x10b.v" into library xil_defaultlib
+INFO: [VRFC 10-311] analyzing module rom_1024x10b
+INFO: [VRFC 10-2263] Analyzing Verilog file "D:/senhaowang/project/33_hs_dual_da/prj/hs_dual_da.gen/sources_1/ip/clk_wiz_0/clk_wiz_0_clk_wiz.v" into library xil_defaultlib
+INFO: [VRFC 10-311] analyzing module clk_wiz_0_clk_wiz
+INFO: [VRFC 10-2263] Analyzing Verilog file "D:/senhaowang/project/33_hs_dual_da/prj/hs_dual_da.gen/sources_1/ip/clk_wiz_0/clk_wiz_0.v" into library xil_defaultlib
+INFO: [VRFC 10-311] analyzing module clk_wiz_0
+INFO: [VRFC 10-2263] Analyzing Verilog file "D:/senhaowang/project/33_hs_dual_da/rtl/binary2bcd.v" into library xil_defaultlib
+INFO: [VRFC 10-311] analyzing module binary2bcd
+INFO: [VRFC 10-2263] Analyzing Verilog file "D:/senhaowang/project/33_hs_dual_da/rtl/da_wave_send.v" into library xil_defaultlib
+INFO: [VRFC 10-311] analyzing module da_wave_send
+INFO: [VRFC 10-2263] Analyzing Verilog file "D:/senhaowang/project/33_hs_dual_da/rtl/hs_dual_da.v" into library xil_defaultlib
+INFO: [VRFC 10-311] analyzing module hs_dual_da
+INFO: [VRFC 10-2263] Analyzing Verilog file "D:/senhaowang/project/33_hs_dual_da/rtl/mnist_tx_controller.v" into library xil_defaultlib
+INFO: [VRFC 10-311] analyzing module mnist_tx_controller
+INFO: [VRFC 10-2263] Analyzing Verilog file "D:/senhaowang/project/33_hs_dual_da/rtl/seg_led.v" into library xil_defaultlib
+INFO: [VRFC 10-311] analyzing module seg_led
+INFO: [VRFC 10-2263] Analyzing Verilog file "D:/senhaowang/project/33_hs_dual_da/rtl/uart_rx.v" into library xil_defaultlib
+INFO: [VRFC 10-311] analyzing module uart_rx
+INFO: [VRFC 10-2263] Analyzing Verilog file "D:/senhaowang/project/33_hs_dual_da/rtl/uart_tx.v" into library xil_defaultlib
+INFO: [VRFC 10-311] analyzing module uart_tx
+INFO: [VRFC 10-2263] Analyzing Verilog file "D:/senhaowang/project/33_hs_dual_da/sim/tb/tb_hs_dual_da.v" into library xil_defaultlib
+INFO: [VRFC 10-311] analyzing module tb_hs_dual_da

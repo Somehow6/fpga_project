@@ -1,91 +1,164 @@
 //****************************************Copyright (c)***********************************//
-//Ô­×Ó¸çÔÚÏß½ÌÑ§Æ½Ì¨£ºwww.yuanzige.com
-//¼¼ÊõÖ§³Ö£ºwww.openedv.com
-//ÌÔ±¦µêÆÌ£ºhttp://openedv.taobao.com
-//¹Ø×¢Î¢ĞÅ¹«ÖÚÆ½Ì¨Î¢ĞÅºÅ£º"ÕıµãÔ­×Ó"£¬Ãâ·Ñ»ñÈ¡ZYNQ & FPGA & STM32 & LINUX×ÊÁÏ¡£
-//°æÈ¨ËùÓĞ£¬µÁ°æ±Ø¾¿¡£
-//Copyright(C) ÕıµãÔ­×Ó 2018-2028
-//All rights reserved
-//----------------------------------------------------------------------------------------
-// File name:           hdmi_top
-// Last modified Date:  2020/05/04 9:19:08
-// Last Version:        V1.0
-// Descriptions:        HDMIÏÔÊ¾¶¥²ãÄ£¿é
-//                      
-//----------------------------------------------------------------------------------------
-// Created by:          ÕıµãÔ­×Ó
-// Created date:        2019/05/04 9:19:08
-// Version:             V1.0
-// Descriptions:        The original version
-//
-//----------------------------------------------------------------------------------------
+// HDMIæ˜¾ç¤ºé¡¶å±‚æ¨¡å—ï¼ˆå¢å¼ºç‰ˆï¼‰
+// åŠŸèƒ½ï¼šå·¦å³åˆ†å±æ˜¾ç¤º
+//   - å·¦åŠå±ï¼šåŸå›¾ + OSDçº¢æ¡†
+//   - å³åŠå±ï¼š28Ã—28äºŒå€¼å›¾åƒæ”¾å¤§æ˜¾ç¤º
 //****************************************************************************************//
 
 module  hdmi_top(
     input           pixel_clk,
     input           pixel_clk_5x,    
     input           sys_rst_n,
-   //hdmi½Ó¿Ú 
-    output          tmds_clk_p,     // TMDS Ê±ÖÓÍ¨µÀ
+   // HDMIæ¥å£
+    output          tmds_clk_p,     // TMDS æ—¶é’Ÿé€šé“
     output          tmds_clk_n,
-    output [2:0]    tmds_data_p,    // TMDS Êı¾İÍ¨µÀ
+    output [2:0]    tmds_data_p,    // TMDS æ•°æ®é€šé“
     output [2:0]    tmds_data_n,
-    output          tmds_oen ,      // TMDS Êä³öÊ¹ÄÜ
-   //ÓÃ»§½Ó¿Ú 
-    output          video_vs,       //HDMI³¡ĞÅºÅ      
-    output  [10:0]  pixel_xpos,     //ÏñËØµãºá×ø±ê
-    output  [10:0]  pixel_ypos,     //ÏñËØµã×İ×ø±ê      
-    input   [15:0]  data_in,        //ÊäÈëÊı¾İ
-    output          data_req        //ÇëÇóÊı¾İÊäÈë   
+    output          tmds_oen ,      // TMDS è¾“å‡ºä½¿èƒ½
+   // ç”¨æˆ·æ¥å£ï¼ˆå·¦åŠå± - åŸå›¾ï¼‰
+    output          video_vs,       // HDMIåœºä¿¡å·      
+    output  [10:0]  pixel_xpos,     // åƒç´ ç‚¹æ¨ªåæ ‡
+    output  [10:0]  pixel_ypos,     // åƒç´ ç‚¹çºµåæ ‡      
+    input   [15:0]  data_in,        // è¾“å…¥æ•°æ®ï¼ˆæ¥è‡ªDDR3ï¼‰
+    output          data_req,       // æ•°æ®è¯·æ±‚ä¿¡å·
+   // 28Ã—28äºŒå€¼å›¾åƒç¼“å­˜æ¥å£ï¼ˆå³åŠå±ï¼‰
+    input           binary_pixel,   // äºŒå€¼åƒç´ è¾“å…¥
+    input           binary_valid    // äºŒå€¼åƒç´ æœ‰æ•ˆ
 );
 
-//wire define
-wire          clk_locked;
+//==============================================================================
+// å†…éƒ¨ä¿¡å·å®šä¹‰
+//==============================================================================
 wire          video_hs;
 wire          video_de;
 wire  [23:0]  video_rgb;
-wire  [23:0]  video_rgb_565;
+wire  [15:0]  video_rgb_565;
 
-//*****************************************************
-//**                    main code
-//*****************************************************
+// OSDçº¢æ¡†è¾“å‡º
+wire [15:0]   left_pixel_osd;
+wire          left_valid_osd;
 
-//½«ÉãÏñÍ·16bitÊı¾İ×ª»»Îª24bitµÄhdmiÊı¾İ
+// å³åŠå±æ˜¾ç¤ºä¿¡å·
+wire [10:0]   right_panel_x;
+wire [10:0]   right_panel_y;
+wire [15:0]   right_pixel;
+wire          right_valid;
+
+// åƒç´ æ”¾å¤§æ¨¡å—ä¿¡å·
+wire [4:0]    buf_rd_x;
+wire [4:0]    buf_rd_y;
+wire          scaled_pixel;
+wire          scaled_valid;
+
+// è§†é¢‘æ··åˆå™¨è¾“å‡º
+wire [15:0]   mixed_pixel;
+wire          mixed_valid;
+
+//==============================================================================
+// å·¦åŠå±æ•°æ®è·¯å¾„ï¼šåŸå›¾ + OSDçº¢æ¡†
+//==============================================================================
+osd_rectangle u_osd_rectangle (
+    .pixel_clk      (pixel_clk      ),
+    .rst_n          (sys_rst_n      ),
+    .pixel_x        (pixel_xpos     ),
+    .pixel_y        (pixel_ypos     ),
+    .pixel_in       (data_in        ),
+    .pixel_valid_in (data_req       ),
+    .pixel_out      (left_pixel_osd ),
+    .pixel_valid_out(left_valid_osd )
+);
+
+//==============================================================================
+// å³åŠå±æ•°æ®è·¯å¾„ï¼š28Ã—28å›¾åƒæ”¾å¤§æ˜¾ç¤º
+//==============================================================================
+// è®¡ç®—å³åŠå±çš„ç›¸å¯¹åæ ‡
+assign right_panel_x = (pixel_xpos >= 11'd512) ? (pixel_xpos - 11'd512) : 11'd0;
+assign right_panel_y = pixel_ypos;
+
+// åƒç´ æ”¾å¤§æ¨¡å—ï¼ˆ28Ã—28 â†’ 280Ã—280ï¼‰
+pixel_scaler u_pixel_scaler (
+    .clk            (pixel_clk      ),
+    .rst_n          (sys_rst_n      ),
+    .display_x      (right_panel_x  ),
+    .display_y      (right_panel_y  ),
+    .display_valid  (data_req       ),
+    .buf_rd_x       (buf_rd_x       ),
+    .buf_rd_y       (buf_rd_y       ),
+    .buf_rd_data    (binary_pixel   ),  // ç›´æ¥è¿æ¥è¾“å…¥çš„äºŒå€¼åƒç´ 
+    .scaled_pixel   (scaled_pixel   ),
+    .scaled_valid   (scaled_valid   )
+);
+
+// å³åŠå±å¸ƒå±€ç”Ÿæˆ
+right_panel_gen u_right_panel_gen (
+    .pixel_clk      (pixel_clk      ),
+    .rst_n          (sys_rst_n      ),
+    .pixel_x        (right_panel_x  ),
+    .pixel_y        (right_panel_y  ),
+    .pixel_valid    (data_req       ),
+    .binary_pixel   (scaled_pixel   ),
+    .binary_valid   (scaled_valid   ),
+    .panel_pixel    (right_pixel    ),
+    .panel_valid    (right_valid    )
+);
+
+//==============================================================================
+// è§†é¢‘æ··åˆå™¨ï¼šå·¦å³åˆ†å±åˆæˆ
+//==============================================================================
+video_mixer u_video_mixer (
+    .pixel_clk      (pixel_clk      ),
+    .rst_n          (sys_rst_n      ),
+    .pixel_x        (pixel_xpos     ),
+    .pixel_y        (pixel_ypos     ),
+    .left_pixel     (left_pixel_osd ),
+    .left_valid     (left_valid_osd ),
+    .right_pixel    (right_pixel    ),
+    .right_valid    (right_valid    ),
+    .mixed_pixel    (mixed_pixel    ),
+    .mixed_valid    (mixed_valid    )
+);
+
+// ä½¿ç”¨æ··åˆåçš„åƒç´ æ•°æ®
+assign video_rgb_565 = mixed_pixel;
+
+//==============================================================================
+// RGB565è½¬RGB888ï¼ˆHDMIè¾“å‡ºï¼‰
+//==============================================================================
 assign video_rgb = {video_rgb_565[15:11],3'b000,video_rgb_565[10:5],2'b00,
                     video_rgb_565[4:0],3'b000};  
 
-//Àı»¯ÊÓÆµÏÔÊ¾Çı¶¯Ä£¿é
+//==============================================================================
+// è§†é¢‘é©±åŠ¨æ¨¡å—ï¼ˆç”Ÿæˆæ—¶åºä¿¡å·ï¼‰
+//==============================================================================
 video_driver u_video_driver(
-    .pixel_clk      (pixel_clk),
-    .sys_rst_n      (sys_rst_n),
-
-    .video_hs       (video_hs),
-    .video_vs       (video_vs),
-    .video_de       (video_de),
-    .video_rgb      (video_rgb_565),
-   
-    .data_req       (data_req),
-    .pixel_xpos     (pixel_xpos),
-    .pixel_ypos     (pixel_ypos),
-    .pixel_data     (data_in)
-    );
+    .pixel_clk      (pixel_clk      ),
+    .sys_rst_n      (sys_rst_n      ),
+    .video_hs       (video_hs       ),
+    .video_vs       (video_vs       ),
+    .video_de       (video_de       ),
+    .video_rgb      (video_rgb_565  ),  // å†…éƒ¨ä½¿ç”¨ï¼Œå®é™…è¾“å‡ºç”±æ··åˆå™¨æä¾›
+    .data_req       (data_req       ),
+    .pixel_xpos     (pixel_xpos     ),
+    .pixel_ypos     (pixel_ypos     ),
+    .pixel_data     (data_in        )  // è¿™ä¸ªè¾“å‡ºä¸å†ä½¿ç”¨
+);
        
-//Àı»¯HDMIÇı¶¯Ä£¿é
+//==============================================================================
+// HDMIç¼–ç æ¨¡å—
+//==============================================================================
 dvi_transmitter_top u_rgb2dvi_0(
-    .pclk           (pixel_clk),
-    .pclk_x5        (pixel_clk_5x),
-    .reset_n        (sys_rst_n),
-                
-    .video_din      (video_rgb),
-    .video_hsync    (video_hs), 
-    .video_vsync    (video_vs),
-    .video_de       (video_de),
-                
-    .tmds_clk_p     (tmds_clk_p),
-    .tmds_clk_n     (tmds_clk_n),
-    .tmds_data_p    (tmds_data_p),
-    .tmds_data_n    (tmds_data_n), 
-    .tmds_oen       (tmds_oen)
-    );
+    .pclk           (pixel_clk      ),
+    .pclk_x5        (pixel_clk_5x   ),
+    .reset_n        (sys_rst_n      ),
+    .video_din      (video_rgb      ),
+    .video_hsync    (video_hs       ), 
+    .video_vsync    (video_vs       ),
+    .video_de       (video_de       ),
+    .tmds_clk_p     (tmds_clk_p     ),
+    .tmds_clk_n     (tmds_clk_n     ),
+    .tmds_data_p    (tmds_data_p    ),
+    .tmds_data_n    (tmds_data_n    ), 
+    .tmds_oen       (tmds_oen       )
+);
 
 endmodule 

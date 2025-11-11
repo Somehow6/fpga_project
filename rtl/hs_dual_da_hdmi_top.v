@@ -22,8 +22,7 @@ module hs_dual_da_hdmi_top(
     output       [5:0]    seg_sel      ,  // Segment select
     output       [7:0]    seg_led      ,  // Segment LED
     
-    //========== Camera Interfaces (COMMENTED OUT FOR USB DEBUG) ==========
-    /*
+    //========== Camera Interfaces ==========
     input                 cam_pclk     ,  // Camera pixel clock
     input                 cam_vsync    ,  // Camera vsync
     input                 cam_href     ,  // Camera href
@@ -32,10 +31,8 @@ module hs_dual_da_hdmi_top(
     output                cam_pwdn     ,  // Camera power down
     output                cam_scl      ,  // Camera I2C clock
     inout                 cam_sda      ,  // Camera I2C data
-    */
     
-    //========== DDR3 Interfaces (COMMENTED OUT FOR USB DEBUG) ==========
-    /*
+    //========== DDR3 Interfaces ==========
     inout   [15:0]        ddr3_dq      ,  // DDR3 data
     inout   [1:0]         ddr3_dqs_n   ,  // DDR3 DQS negative
     inout   [1:0]         ddr3_dqs_p   ,  // DDR3 DQS positive
@@ -51,16 +48,13 @@ module hs_dual_da_hdmi_top(
     output  [0:0]         ddr3_cs_n    ,  // DDR3 chip select
     output  [1:0]         ddr3_dm      ,  // DDR3 data mask
     output  [0:0]         ddr3_odt     ,  // DDR3 ODT
-    */
     
-    //========== HDMI Interfaces (COMMENTED OUT FOR USB DEBUG) ==========
-    /*
+    //========== HDMI Interfaces ==========
     output                tmds_clk_p   ,  // TMDS clock positive
     output                tmds_clk_n   ,  // TMDS clock negative
     output  [2:0]         tmds_data_p  ,  // TMDS data positive
     output  [2:0]         tmds_data_n  ,  // TMDS data negative
     output                tmds_oen     ,  // TMDS output enable
-    */
     
     //========== ADC Interfaces (CH2) ==========
     input   [11:0]        ch2_data     ,  // CH2 ADC data input (D0-D11)
@@ -357,10 +351,8 @@ hs_dual_da u_hs_dual_da (
 
 //==============================================================================
 // OV5640 Camera + HDMI Display Module Instance
-// Handles camera capture, DDR3 frame buffer, and HDMI output
-// COMMENTED OUT FOR FAST SYNTHESIS DURING USB DEBUG
+// Handles camera capture, DDR3 frame buffer, image preprocessing, and HDMI output
 //==============================================================================
-/*
 ov5640_hdmi u_ov5640_hdmi (
     .sys_rst_n      (rst_n        ),
     .locked         (locked       ),
@@ -401,7 +393,6 @@ ov5640_hdmi u_ov5640_hdmi (
     .tmds_data_n    (tmds_data_n  ),
     .tmds_oen       (tmds_oen     )
 );
-*/
 
 //==============================================================================
 // ADC Top Module Instance (60MHz unified clock domain)

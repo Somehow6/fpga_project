@@ -1,0 +1,12 @@
+#-----------------------------------------------------------
+# Vivado v2020.2 (64-bit)
+# SW Build 3064766 on Wed Nov 18 09:12:45 MST 2020
+# IP Build 3064653 on Wed Nov 18 14:17:31 MST 2020
+# Start of session at: Thu Nov  6 01:52:33 2025
+# Process ID: 34832
+# Current directory: D:/senhaowang/project/33_hs_dual_da/prj/hs_dual_da.runs/rom_1024x10b_synth_1
+# Command line: vivado.exe -log rom_1024x10b.vds -product Vivado -mode batch -messageDb vivado.pb -notrace -source rom_1024x10b.tcl
+# Log file: D:/senhaowang/project/33_hs_dual_da/prj/hs_dual_da.runs/rom_1024x10b_synth_1/rom_1024x10b.vds
+# Journal file: D:/senhaowang/project/33_hs_dual_da/prj/hs_dual_da.runs/rom_1024x10b_synth_1\vivado.jou
+#-----------------------------------------------------------
+source rom_1024x10b.tcl -notrace
